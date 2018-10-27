@@ -28,11 +28,15 @@ mongoose.connection.openUri('mongodb://' + connection_string, (err, res) => {
 
 
 //Importar Rutas
-var appRoutes = require('./routes/app.js');
+var usuarioRoutes = require('./routes/estacion.js');
+var usuarioRoutes = require('./routes/redSocial.js');
 var usuarioRoutes = require('./routes/usuario.js');
 var loginRoutes = require('./routes/login');
+var appRoutes = require('./routes/app.js');
 
 //Rutas
+app.use('/estacion', estacionRoutes);
+app.use('/redSocial', redSocialRoutes);
 app.use('/usuario', usuarioRoutes);
 app.use('/login', loginRoutes);
 app.use('/', appRoutes);

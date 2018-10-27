@@ -7,26 +7,26 @@ var app = express();
 
 
 
-var Usuario = require('../models/usuario');
+var RedSocial = require('../models/redSocial');
 //Rustas
 
-//Obtener lista de usuarios
+//Obtener lista de redSociales
 app.get('/', (req, res, next) => {
 
-    Usuario.find({}, 'nombre email img role')
+    RedSocial.find({}, 'nombre email img role')
         .exec(
-            (err, usuarios) => {
+            (err, redSociales) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error buscando usuarios',
+                        mensaje: 'Error buscando redSociales',
                         errors: err
                     });
                 }
                 res.status(200).json({
                     ok: true,
-                    mensaje: 'Peticion usuario correctamente',
-                    usuarios: usuarios
+                    mensaje: 'Peticion redSociales correctamente',
+                    redSociales: redSociales
                 });
             });
 
@@ -37,10 +37,10 @@ app.get('/', (req, res, next) => {
 
 
 
-//Crear usuario  mdAutenticacion.verificaToken,
+//Crear redSocial
 app.post('/', (req, res) => {
     var body = req.body;
-    var usuario = new Usuario({
+    var redSocial = new RedSocial({
         nombre: body.nombre,
         email: body.email,
         password: bcrypt.hashSync(body.password),
@@ -48,7 +48,7 @@ app.post('/', (req, res) => {
         role: body.role
     });
 
-    usuario.save((err, usuarioGuardado) => {
+    redSocial.save((err, redSocialGuardado) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -58,7 +58,7 @@ app.post('/', (req, res) => {
         }
         res.status(201).json({
             ok: true,
-            usuario: usuarioGuardado
+            redSocial: redSocialGuardado
         });
     });
 });
@@ -68,68 +68,68 @@ app.put('/:id', (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Usuario.findById(id, (err, usuario) => {
+    RedSocial.findById(id, (err, redSocial) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error buscar usuario',
+                mensaje: 'Error buscar redSocial',
                 errors: err
             });
         }
 
-        if (!usuario) {
+        if (!redSocial) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'no se encontro un usuario',
+                mensaje: 'no se encontro un redSocial',
                 errors: err
             });
         }
 
-        usuario.nombre = body.nombre;
-        usuario.email = body.email;
-        usuario.role = body.role;
+        redSocial.nombre = body.nombre;
+        redSocial.email = body.email;
+        redSocial.role = body.role;
 
-        usuario.save((err, usuarioActualizado) => {
+        redSocial.save((err, redSocialActualizado) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar el usuario',
+                    mensaje: 'Error al actualizar el redSocial',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                usuario: usuarioActualizado
+                redSocial: redSocialActualizado
             });
         });
     });
 });
-//Eliminar Usuario mdAutenticacion.verificaToken,
+//Eliminar redSocial  mdAutenticacion.verificaToken,
 app.delete('/:id', (req, res) => {
     var id = req.params.id;
 
-    Usuario.findByIdAndRemove(id, (err, usuarioEliminado) => {
+    RedSocial.findByIdAndRemove(id, (err, redSocialEliminado) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al eliminar el usuario',
+                mensaje: 'Error al eliminar el redSocial',
                 errors: err
             });
         }
 
-        if (!usuarioEliminado) {
+        if (!redSocialEliminado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'no se encontro un usuario',
+                mensaje: 'no se encontro un redSocial',
                 errors: err
             });
         }
 
         res.status(200).json({
             ok: true,
-            usuario: usuarioEliminado
+            redSocial: redSocialEliminado
         });
     });
 });

@@ -7,26 +7,26 @@ var app = express();
 
 
 
-var Usuario = require('../models/usuario');
+var Estacion = require('../models/estacion');
 //Rustas
 
-//Obtener lista de usuarios
+//Obtener lista de estaciones
 app.get('/', (req, res, next) => {
 
-    Usuario.find({}, 'nombre email img role')
+    Estacion.find({}, 'nombre email img role')
         .exec(
-            (err, usuarios) => {
+            (err, estaciones) => {
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error buscando usuarios',
+                        mensaje: 'Error buscando estaciones',
                         errors: err
                     });
                 }
                 res.status(200).json({
                     ok: true,
-                    mensaje: 'Peticion usuario correctamente',
-                    usuarios: usuarios
+                    mensaje: 'Peticion estaciones correctamente',
+                    estaciones: estaciones
                 });
             });
 
@@ -37,10 +37,10 @@ app.get('/', (req, res, next) => {
 
 
 
-//Crear usuario  mdAutenticacion.verificaToken,
+//Crear estacion
 app.post('/', (req, res) => {
     var body = req.body;
-    var usuario = new Usuario({
+    var estacion = new Estacion({
         nombre: body.nombre,
         email: body.email,
         password: bcrypt.hashSync(body.password),
@@ -48,7 +48,7 @@ app.post('/', (req, res) => {
         role: body.role
     });
 
-    usuario.save((err, usuarioGuardado) => {
+    estacion.save((err, estacionGuardado) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -58,7 +58,7 @@ app.post('/', (req, res) => {
         }
         res.status(201).json({
             ok: true,
-            usuario: usuarioGuardado
+            estacion: estacionGuardado
         });
     });
 });
@@ -68,68 +68,68 @@ app.put('/:id', (req, res) => {
     var id = req.params.id;
     var body = req.body;
 
-    Usuario.findById(id, (err, usuario) => {
+    Estacion.findById(id, (err, estacion) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error buscar usuario',
+                mensaje: 'Error buscar estacion',
                 errors: err
             });
         }
 
-        if (!usuario) {
+        if (!estacion) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'no se encontro un usuario',
+                mensaje: 'no se encontro un estacion',
                 errors: err
             });
         }
 
-        usuario.nombre = body.nombre;
-        usuario.email = body.email;
-        usuario.role = body.role;
+        estacion.nombre = body.nombre;
+        estacion.email = body.email;
+        estacion.role = body.role;
 
-        usuario.save((err, usuarioActualizado) => {
+        estacion.save((err, estacionActualizado) => {
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar el usuario',
+                    mensaje: 'Error al actualizar el estacion',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                usuario: usuarioActualizado
+                estacion: estacionActualizado
             });
         });
     });
 });
-//Eliminar Usuario mdAutenticacion.verificaToken,
+//Eliminar estacion  mdAutenticacion.verificaToken,
 app.delete('/:id', (req, res) => {
     var id = req.params.id;
 
-    Usuario.findByIdAndRemove(id, (err, usuarioEliminado) => {
+    Estacion.findByIdAndRemove(id, (err, estacionEliminado) => {
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al eliminar el usuario',
+                mensaje: 'Error al eliminar el estacion',
                 errors: err
             });
         }
 
-        if (!usuarioEliminado) {
+        if (!estacionEliminado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'no se encontro un usuario',
+                mensaje: 'no se encontro un estacion',
                 errors: err
             });
         }
 
         res.status(200).json({
             ok: true,
-            usuario: usuarioEliminado
+            estacion: estacionEliminado
         });
     });
 });
