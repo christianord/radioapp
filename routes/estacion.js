@@ -96,8 +96,10 @@ app.put('/:id',
             if (!estacion) return shared.getResponseError({ message: 'No existe un estacion con ese ID' }, res, 400, 'El estacion con el id ' + id + ' no existe');
 
             estacion.nombre = body.nombre;
-            estacion.DNI = body.DNI;
-            //estacion.usuario = req.usuario._id;
+            estacion.urlStriming = body.urlStriming;
+            estacion.descripcion = body.descripcion;
+            estacion.logo = body.logo;
+            estacion.fondo = body.fondo;
 
             estacion.save((err, estacionGuardado) => {
 
@@ -127,7 +129,10 @@ app.post('/',
 
         var estacion = new Estacion({
             nombre: body.nombre,
-            DNI: body.DNI
+            urlStriming: body.urlStriming,
+            descripcion: body.descripcion,
+            logo: body.logo,
+            fondo: body.fondo
         });
 
         estacion.save((err, estacionGuardado) => {

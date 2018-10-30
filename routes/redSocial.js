@@ -4,10 +4,10 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
-var Estacion = require('../models/estacion');
+var RedSocial = require('../models/redSocial');
 
 // ==========================================
-// Obtener todos estaciones las
+// Obtener todos redesSociales las
 // ==========================================
 app.get('/', (req, res, next) => {
 
@@ -28,7 +28,7 @@ app.get('/', (req, res, next) => {
 
     //Filter 
     var filtro = {}
-    Estacion.schema.eachPath(function(path) {
+    RedSocial.schema.eachPath(function(path) {
         var nombre = path.replace('_', '');
         if (req.query.hasOwnProperty(nombre)) {
             filtro[nombre] = req.query[nombre];
@@ -36,7 +36,7 @@ app.get('/', (req, res, next) => {
     });
 
     // Columnas resultado 
-    var columnas = req.query.columnas || 'nombre urlStriming descripcion logo fondo';
+    var columnas = req.query.columnas || 'nombre usuario password idEstacion';
 
     // Search
     var searchFilter = {};
@@ -48,14 +48,14 @@ app.get('/', (req, res, next) => {
             searchFilter[element] = regex;
         });
 
-        //Estacion.schema.eachPath(function(path) {
+        //RedSocial.schema.eachPath(function(path) {
         //    var nombre = path.replace('_', '');
         //    searchFilter[nombre] = regex;
         //});
     }
 
 
-    Estacion.find(filtro, columnas)
+    RedSocial.find(filtro, columnas)
         .and(searchFilter)
         .sort(dataSort)
         .skip(page * pageSize)
@@ -64,9 +64,9 @@ app.get('/', (req, res, next) => {
         .exec(
             (err, las) => {
 
-                if (err) return shared.getResponseError(err, res, 500, 'Error cargando Estacion');
+                if (err) return shared.getResponseError(err, res, 500, 'Error cargando RedSocial');
 
-                Estacion.count({}, (err, conteo) => {
+                RedSocial.count({}, (err, conteo) => {
 
                     res.status(200).json({
                         ok: true,
@@ -90,22 +90,23 @@ app.put('/:id',
         var id = req.params.id;
         var body = req.body;
 
-        Estacion.findById(id, (err, estacion) => {
+        RedSocial.findById(id, (err, redSocial) => {
 
-            if (err) return shared.getResponseError(err, res, 500, 'Error al buscar estacion');
-            if (!estacion) return shared.getResponseError({ message: 'No existe un estacion con ese ID' }, res, 400, 'El estacion con el id ' + id + ' no existe');
+            if (err) return shared.getResponseError(err, res, 500, 'Error al buscar redSocial');
+            if (!redSocial) return shared.getResponseError({ message: 'No existe un redSocial con ese ID' }, res, 400, 'El redSocial con el id ' + id + ' no existe');
 
-            estacion.nombre = body.nombre;
-            estacion.DNI = body.DNI;
-            //estacion.usuario = req.usuario._id;
+            redSocial.nombre = body.nombre;
+            redSocial.usuario = body.usuario;
+            redSocial.password = body.password;
+            redSocial.idEstacion = body.idEstacion;
 
-            estacion.save((err, estacionGuardado) => {
+            redSocial.save((err, redSocialGuardado) => {
 
-                if (err) return shared.getResponseError(err, res, 400, 'Error al actualizar estacion');
+                if (err) return shared.getResponseError(err, res, 400, 'Error al actualizar redSocial');
 
                 res.status(200).json({
                     ok: true,
-                    estacion: estacionGuardado
+                    redSocial: redSocialGuardado
                 });
 
 
@@ -117,7 +118,7 @@ app.put('/:id',
 
 
 // ==========================================
-// Crear un nuevo estacion
+// Crear un nuevo redSocial
 // ==========================================
 app.post('/',
     //mdAutenticacion.verificaToken,
@@ -125,18 +126,20 @@ app.post('/',
 
         var body = req.body;
 
-        var estacion = new Estacion({
+        var redSocial = new RedSocial({
             nombre: body.nombre,
-            DNI: body.DNI
+            usuario: body.usuario,
+            password: body.password,
+            idEstacion: body.idEstacion
         });
 
-        estacion.save((err, estacionGuardado) => {
+        redSocial.save((err, redSocialGuardado) => {
 
-            if (err) return shared.getResponseError(err, res, 400, 'Error al crear estacion');
+            if (err) return shared.getResponseError(err, res, 400, 'Error al crear redSocial');
 
             res.status(201).json({
                 ok: true,
-                estacion: estacionGuardado
+                redSocial: redSocialGuardado
             });
 
 
@@ -145,7 +148,7 @@ app.post('/',
     });
 
 // ============================================
-//   Borrar un estacion por el id
+//   Borrar un redSocial por el id
 // ============================================
 app.delete('/:id',
     //mdAutenticacion.verificaToken,
@@ -153,14 +156,14 @@ app.delete('/:id',
 
         var id = req.params.id;
 
-        Estacion.findByIdAndRemove(id, (err, estacionBorrado) => {
+        RedSocial.findByIdAndRemove(id, (err, redSocialBorrado) => {
 
-            if (err) return shared.getResponseError(err, res, 500, 'Error borrar estacion');
-            if (!estacionBorrado) return shared.getResponseError({ message: 'No existe un estacion con ese id' }, res, 400, 'No existe un estacion con ese id');
+            if (err) return shared.getResponseError(err, res, 500, 'Error borrar redSocial');
+            if (!redSocialBorrado) return shared.getResponseError({ message: 'No existe un redSocial con ese id' }, res, 400, 'No existe un redSocial con ese id');
 
             res.status(200).json({
                 ok: true,
-                estacion: estacionBorrado
+                redSocial: redSocialBorrado
             });
 
         });
