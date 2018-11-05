@@ -1,4 +1,4 @@
-function getResponseError(err, res, codigo, mensaje) {
+exports.getResponseError = function(err, res, codigo, mensaje) {
 
     return res.status(codigo).json({
         ok: false,

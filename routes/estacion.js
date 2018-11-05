@@ -5,6 +5,7 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 var Estacion = require('../models/estacion');
+var EstacionRedsocial = require('../models/estacionRedSocial');
 
 // ==========================================
 // Obtener todos estaciones las
@@ -14,7 +15,7 @@ app.get('/', (req, res, next) => {
     //Pagination
     var pageSize = req.query.pageSize || 5; // pageSize Default 5
     pageSize = Number(pageSize);
-    var page = mber(page);
+    var page = Number(page);
 
     //Sort
     var sort = req.query.sort || '_id'; // sout Default _id
@@ -96,7 +97,7 @@ app.put('/:id',
             if (!estacion) return shared.getResponseError({ message: 'No existe un estacion con ese ID' }, res, 400, 'El estacion con el id ' + id + ' no existe');
 
             estacion.nombre = body.nombre;
-            estacion.urlStriming = body.urlStriming;
+            estacion.urlStreaming = body.urlStreaming;
             estacion.descripcion = body.descripcion;
             estacion.logo = body.logo;
             estacion.fondo = body.fondo;
@@ -129,7 +130,7 @@ app.post('/',
 
         var estacion = new Estacion({
             nombre: body.nombre,
-            urlStriming: body.urlStriming,
+            urlStreaming: body.urlStreaming,
             descripcion: body.descripcion,
             logo: body.logo,
             fondo: body.fondo
@@ -170,6 +171,93 @@ app.delete('/:id',
 
         });
 
+    });
+
+
+
+// ============================================
+//   Agregar RedSocial
+// ============================================
+app.get('/:id/redsocial/',
+    //mdAutenticacion.verificaToken,
+    (req, res) => {
+
+        var idEstacion = req.params.id;
+
+        Estacion.find({ _id: idEstacion })
+            .populate('redesSociales.redSocial')
+            .exec(
+                (err, las) => {
+
+                    if (err) return shared.getResponseError(err, res, 500, 'Error cargando Estacion');
+
+
+                    if (!las || las.length == 0) return shared.getResponseError({ message: 'No existe un estacion con ese id' }, res, 500, 'No existe la Estacion');
+
+                    var idEstacion = las[0]._id;
+                    var redesSociales = las[0].redesSociales;
+
+                    res.status(200).json({
+                        ok: true,
+                        idEstacion: idEstacion,
+                        redesSociales: redesSociales
+                    });
+
+                });
+
+    });
+
+app.post('/:id/redsocial/',
+    //mdAutenticacion.verificaToken,
+    (req, res) => {
+        var id = req.params.id;
+        var body = req.body;
+
+        var estacionRedsocial = new EstacionRedsocial();
+        estacionRedsocial.redSocial = body.redSocial;
+        estacionRedsocial.usuario = body.usuario;
+        estacionRedsocial.password = body.password;
+
+
+        Estacion.findOneAndUpdate({ "_id": id }, {
+                "$push": {
+                    "redesSociales": estacionRedsocial
+                }
+            },
+            function(err, estacionGuardado) {
+                if (err) return shared.getResponseError(err, res, 500, 'Error al buscar estacion');
+                if (!estacionGuardado) return shared.getResponseError({ message: 'No existe un estacion con ese ID' }, res, 400, 'El estacion con el id ' + id + ' no existe');
+
+                res.status(200).json({
+                    ok: true,
+                    estacion: estacionGuardado
+                });
+            }
+        );
+
+    });
+
+app.delete('/:id/redsocial/:sid',
+    //mdAutenticacion.verificaToken,
+    (req, res) => {
+        var id = req.params.id;
+        var sid = req.params.sid;
+
+        Estacion.findOneAndUpdate({ "_id": id }, {
+                "$pull": {
+                    "redesSociales": { "_id": sid }
+                }
+            },
+            function(err, estacionGuardado) {
+                if (err) return shared.getResponseError(err, res, 500, 'Error al buscar estacion');
+                if (!estacionGuardado) return shared.getResponseError({ message: 'No existe un estacion con ese ID' }, res, 400, 'El estacion con el id ' + id + ' no existe');
+
+                res.status(200).json({
+                    ok: true,
+                    estacion: estacionGuardado
+                });
+            }
+        );
     });
 
 module.exports = app;

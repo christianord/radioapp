@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var estacionRedSocial = require('../models/estacionRedSocial');
 var Schema = mongoose.Schema;
 
 var estacionSchema = new Schema({
@@ -7,7 +8,8 @@ var estacionSchema = new Schema({
     urlStreaming: { type: String, required: [true, 'El urlStreaming es requerido'] },
     descripcion: { type: String },
     logo: { type: String },
-    fondo: { type: String }
+    fondo: { type: String },
+    redesSociales: [estacionRedSocial.schema]
 
 });
 

@@ -14,7 +14,7 @@ app.get('/', (req, res, next) => {
     //Pagination
     var pageSize = req.query.pageSize || 5; // pageSize Default 5
     pageSize = Number(pageSize);
-    var page = mber(page);
+    var page = Number(page);
 
     //Sort
     var sort = req.query.sort || '_id'; // sout Default _id
@@ -36,7 +36,7 @@ app.get('/', (req, res, next) => {
     });
 
     // Columnas resultado 
-    var columnas = req.query.columnas || 'nombre usuario password idEstacion';
+    var columnas = req.query.columnas || 'nombre';
 
     // Search
     var searchFilter = {};
@@ -60,7 +60,6 @@ app.get('/', (req, res, next) => {
         .sort(dataSort)
         .skip(page * pageSize)
         .limit(pageSize)
-        //.populate('usuario', 'nombre email')
         .exec(
             (err, las) => {
 
@@ -96,9 +95,6 @@ app.put('/:id',
             if (!redSocial) return shared.getResponseError({ message: 'No existe un redSocial con ese ID' }, res, 400, 'El redSocial con el id ' + id + ' no existe');
 
             redSocial.nombre = body.nombre;
-            redSocial.usuario = body.usuario;
-            redSocial.password = body.password;
-            redSocial.idEstacion = body.idEstacion;
 
             redSocial.save((err, redSocialGuardado) => {
 
@@ -127,10 +123,7 @@ app.post('/',
         var body = req.body;
 
         var redSocial = new RedSocial({
-            nombre: body.nombre,
-            usuario: body.usuario,
-            password: body.password,
-            idEstacion: body.idEstacion
+            nombre: body.nombre
         });
 
         redSocial.save((err, redSocialGuardado) => {
